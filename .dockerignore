@@ -1,0 +1,13 @@
+repos/
+.git
+__pycache__
+.venv/
+logs/
+.gitignore
+**/*.pyc
+**/*.pyo
+**/*.pyd
+**/*.pyw
+**/*.pyz
+**/*.pywz
+**/*.egg-info

@@ -1,0 +1,15 @@
+**/*.egg-info
+**/node_modules
+**/.mypy_cache
+**/__pycache__
+**/*secret*.yaml
+**/*secret*.yml
+.vscode
+build
+dist
+docker/data/**
+
+.env
+.venv
+repos/
+logs/
