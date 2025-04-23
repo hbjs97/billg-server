@@ -13,8 +13,6 @@ EXCLUDE_PATHS = ["/actuator", "/docs", "/openapi.json"]
 
 def get_client_ip(request: Request):
     x_forwarded_for = request.headers.get("X-Forwarded-For")
-    logger.info(f"Headers: {request.headers}")
-    logger.info(f"X-Forwarded-For: {x_forwarded_for}")
     if x_forwarded_for:
         client_ip = x_forwarded_for.split(",")[0].strip()
     else:
