@@ -1,6 +1,10 @@
 import os
+import logging
 
 from billg.util import Vault
+
+
+logging.basicConfig(level=logging.INFO)
 
 profile = os.environ.get("PYTHON_ENV", "local")
 if profile == "local":
