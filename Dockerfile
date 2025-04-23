@@ -20,4 +20,4 @@ RUN --mount=type=bind,source=uv.lock,target=uv.lock \
     uv sync --no-group dev --frozen --compile-bytecode \
     && uv pip install . --compile-bytecode
 
-CMD ["/app/.venv/bin/fastapi", "run", "main.py", "--port", "80", "--host", "0.0.0.0"]
+CMD ["/app/.venv/bin/fastapi", "run", "main.py", "--proxy-headers", "--port", "80", "--host", "0.0.0.0"]
