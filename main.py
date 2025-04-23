@@ -6,6 +6,7 @@ import json
 import asyncio
 from typing import List
 from billg.util import CustomException, limits, get_client_ip
+from billg.preprocessor import OCRImagePreprocessor
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, Request, File, UploadFile
@@ -16,6 +17,7 @@ logger = logging.getLogger(__name__)
 
 openai = AsyncOpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 app = FastAPI()
+preprocessor = OCRImagePreprocessor()
 
 EXCLUDE_PATHS = ["/actuator", "/docs", "/openapi.json"]
 
@@ -89,9 +91,25 @@ def encode_image(image_bytes):
     return base64.b64encode(image_bytes).decode("utf-8")
 
 
+TEMPLATE = """
+당신은 영수증에서 특정 항목을 추출하는 OCR 전문가입니다.
+아래 제공된 영수증 이미지에서 지정된 항목만 정확히 추출하여 JSON 형식으로 출력하세요.
+추출할 항목:
+{columns}
+응답 규칙:
+- 반드시 JSON 형식으로만 출력합니다.
+- 날짜 및 시간 정보가 포함된 항목이 있으면 "YYYY-MM-DD HH:MM:SS" 형식으로 반환합니다.
+- 이미지에 항목이 존재하지 않으면, 문자열 항목은 빈 문자열(""), 숫자 항목은 숫자 0으로 응답합니다.
+- 추가적인 설명, 코멘트, 부가 정보는 일절 포함하지 않습니다.
+- 영수증에서 실제로 확인된 정보만 응답하고, 추측하지 마세요.
+- 모든 키는 요청한 항목과 정확히 일치해야 합니다.
+"""
+
+
 async def ocr(columns: List[str], file: UploadFile):
     try:
         image_bytes = await file.read()
+        image_bytes = preprocessor.preprocess(image_bytes)
         base64_image = encode_image(image_bytes)
         response = await openai.chat.completions.create(
             model="gpt-4.1-mini",
@@ -101,13 +119,7 @@ async def ocr(columns: List[str], file: UploadFile):
                     "content": [
                         {
                             "type": "text",
-                            "text": f"""
-                            다음 이미지는 영수증이다. 이 이미지에서 다음 항목만 정확히 추출해서 JSON 형식으로 출력해줘.
-                            추출할 항목: {columns}
-                            단, 위 항목 중 날짜 및 시간 정보가 포함된 항목이 있다면 반드시 "YYYY-MM-DD HH:MM:SS" 형식으로 반환해라.
-                            다른 추가적인 설명이나 부가정보는 일절 넣지 말고, 주어진 항목에 대해서만 JSON 키와 값으로 정확히 응답해라.
-                            만약 항목이 이미지에 없으면 해당 항목의 값을 빈 문자열, 또는 숫자의 경우 0으로 응답해라.
-                            """,
+                            "text": TEMPLATE.format(columns=columns),
                         },
                         {
                             "type": "image_url",
