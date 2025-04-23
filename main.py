@@ -11,6 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, Request, File, UploadFile
 from openai import AsyncOpenAI
 
+profile = os.environ.get("PYTHON_ENV", "local")
 logger = logging.getLogger(__name__)
 
 openai = AsyncOpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
@@ -54,13 +55,22 @@ async def global_exception_handler(request: Request, exc: Exception):
     )
 
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
-    allow_credentials=False,
-)
+if profile == "local":
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_methods=["*"],
+        allow_headers=["*"],
+        allow_credentials=False,
+    )
+else:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["https://YOUR_SERVER_URL"],
+        allow_methods=["*"],
+        allow_headers=["*"],
+        allow_credentials=True,
+    )
 
 
 @app.get("/actuator/health/liveness")
