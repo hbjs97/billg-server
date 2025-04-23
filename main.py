@@ -4,7 +4,8 @@ import time
 import base64
 import json
 import asyncio
-import io
+import cv2
+import numpy as np
 
 from typing import List
 from billg.util import CustomException, limits, get_client_ip
@@ -13,7 +14,6 @@ from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, Request, File, UploadFile
 from openai import AsyncOpenAI
-from PIL import Image
 
 profile = os.environ.get("PYTHON_ENV", "local")
 logger = logging.getLogger(__name__)
@@ -94,6 +94,17 @@ def encode_image(image_bytes):
     return base64.b64encode(image_bytes).decode("utf-8")
 
 
+async def resize_image(image_bytes: bytes, size=(1024, 1024), quality=80) -> bytes:
+    def sync_resize():
+        arr = np.frombuffer(image_bytes, np.uint8)
+        img = cv2.imdecode(arr, cv2.IMREAD_GRAYSCALE)
+        img = cv2.resize(img, size, interpolation=cv2.INTER_AREA)
+        _, buf = cv2.imencode(".jpg", img, [int(cv2.IMWRITE_JPEG_QUALITY), quality])
+        return buf.tobytes()
+
+    return await asyncio.to_thread(sync_resize)
+
+
 TEMPLATE = """
 다음 이미지는 영수증이다. 이 이미지에서 다음 항목만 정확히 추출해서 JSON 형식으로 출력해줘.
 추출할 항목: {columns}
@@ -106,17 +117,11 @@ TEMPLATE = """
 async def ocr(columns: List[str], file: UploadFile):
     try:
         image_bytes = await file.read()
+        image_bytes = await resize_image(image_bytes)
 
-        buf = io.BytesIO()
-        Image.open(io.BytesIO(image_bytes)).convert("L").resize(
-            (1024, 1024), Image.LANCZOS
-        ).save(buf, "JPEG", quality=70)
-        image_bytes = buf.getvalue()
-
-        # image_bytes = preprocessor.preprocess(image_bytes)
         base64_image = encode_image(image_bytes)
         response = await openai.chat.completions.create(
-            model="gpt-4.1-mini",
+            model="gpt-4.1",
             messages=[
                 {
                     "role": "user",
@@ -134,7 +139,7 @@ async def ocr(columns: List[str], file: UploadFile):
                     ],
                 },
             ],
-            max_tokens=32768,
+            max_tokens=8192,
             response_format={"type": "json_object"},
         )
         return json.loads(response.choices[0].message.content)
