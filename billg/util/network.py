@@ -1,8 +1,12 @@
 import time
+import logging
+
 from functools import wraps
 from fastapi import Request, HTTPException
 from typing import Callable, Dict, Tuple
 from collections import defaultdict
+
+logger = logging.getLogger(__name__)
 
 EXCLUDE_PATHS = ["/actuator", "/docs", "/openapi.json"]
 
@@ -10,7 +14,7 @@ EXCLUDE_PATHS = ["/actuator", "/docs", "/openapi.json"]
 def get_client_ip(request: Request):
     x_forwarded_for = request.headers.get("X-Forwarded-For")
     if x_forwarded_for:
-        # X-Forwarded-For에서 가장 앞의 IP를 실제 클라이언트 IP로 간주
+        logger.info(f"X-Forwarded-For: {x_forwarded_for}")
         client_ip = x_forwarded_for.split(",")[0].strip()
     else:
         # fallback
