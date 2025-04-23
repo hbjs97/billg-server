@@ -117,6 +117,7 @@ TEMPLATE = """
 async def ocr(columns: List[str], file: UploadFile):
     try:
         image_bytes = await file.read()
+        # TODO: resize 클라단에서 처리하고 보내는게 더 나을거같은데
         image_bytes = await resize_image(image_bytes)
 
         base64_image = encode_image(image_bytes)
@@ -142,6 +143,22 @@ async def ocr(columns: List[str], file: UploadFile):
             max_tokens=8192,
             response_format={"type": "json_object"},
         )
+        usage = response.usage
+        logger.info(
+            f"""
+
+================================ OCR =================================
+{file.filename}
+{response.choices[0].message.content}
+
+Prompt Tokens: {usage.prompt_tokens}
+Completion Tokens: {usage.completion_tokens}
+Total Tokens: {usage.total_tokens}
+======================================================================
+
+"""
+        )
+
         return json.loads(response.choices[0].message.content)
 
     except Exception as e:
