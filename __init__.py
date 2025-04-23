@@ -10,6 +10,6 @@ if profile == "local":
 else:
     Vault.load(
         url="http://vault.example.com:8200",
-        app="billg",
+        app="server",
         profile=profile,
     )
