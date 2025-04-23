@@ -9,6 +9,7 @@ WORKDIR /app
 # 필수 빌드 도구 설치
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential gcc python3-dev tzdata git \
+    libgl1-mesa-glx libglib2.0-0 \
     && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime \
     && echo $TZ > /etc/timezone \
     && rm -rf /var/lib/apt/lists/*
