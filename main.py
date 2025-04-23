@@ -109,7 +109,7 @@ TEMPLATE = """
 async def ocr(columns: List[str], file: UploadFile):
     try:
         image_bytes = await file.read()
-        image_bytes = preprocessor.preprocess(image_bytes)
+        # image_bytes = preprocessor.preprocess(image_bytes)
         base64_image = encode_image(image_bytes)
         response = await openai.chat.completions.create(
             model="gpt-4.1-mini",
