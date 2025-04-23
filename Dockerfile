@@ -17,7 +17,7 @@ COPY . /app
 
 RUN --mount=type=bind,source=uv.lock,target=uv.lock \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
-    uv sync --frozen --compile-bytecode \
+    uv sync --no-group dev --frozen --compile-bytecode \
     && uv pip install . --compile-bytecode
 
 CMD ["/app/.venv/bin/fastapi", "run", "main.py", "--port", "80", "--host", "0.0.0.0"]

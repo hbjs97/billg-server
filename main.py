@@ -5,7 +5,7 @@ import base64
 import json
 import asyncio
 from typing import List
-from billg.util import CustomException
+from billg.util import CustomException, limits, get_client_ip
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, Request, File, UploadFile
@@ -28,7 +28,9 @@ async def log_requests(request, call_next):
     start_time = time.time()
     response = await call_next(request)
     process_time = time.time() - start_time
-    logger.info(f"Request: {request.method} {request.url} - Time: {process_time:.4f}s")
+    logger.info(
+        f"[Request][{get_client_ip(request)}]: {request.method} {request.url} - Time: {process_time:.4f}s"
+    )
     return response
 
 
@@ -126,6 +128,7 @@ async def ocr(columns: List[str], file: UploadFile):
         raise e
 
 
+@limits(calls=10, period_seconds=60)
 @app.post("/scan")
 async def scan(columns: List[str], files: List[UploadFile] = File(...)):
     tasks = [ocr(columns, file) for file in files]

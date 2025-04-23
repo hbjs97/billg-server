@@ -1,9 +1,9 @@
 [project]
-name = "billg-server"
+name = "billg"
 version = "0.0.1"
 description = "BillG Server"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.10"
 dependencies = [
     "pydantic>=2.11.1",
     "fastapi[standard]>=0.115.12",
@@ -14,8 +14,18 @@ dependencies = [
     "hvac>=2.3.0"
 ]
 
-[project.optional-dependencies]
+[dependency-groups]
 dev = [
-    "pyppeteer>=2.0.0",
-    "python-dotenv>=1.1.0"
+    "python-dotenv>=1.1.0",
+    "pytest>=8.3.5",
+    "pytest-asyncio>=0.26.0",
+    "httpx>=0.28.1",
+    "tox>=4.25.0"
+]
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+addopts = "-ra -q"
+testpaths = [
+    "tests"
 ]

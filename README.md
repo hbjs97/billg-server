@@ -6,8 +6,8 @@
 uv venv --python 3.12.10
 source .venv/bin/activate
 
-# 개발 환경
-uv sync --dev
+# 의존성 설치
+uv sync
 ```
 
 ## lock
@@ -22,4 +22,20 @@ uv lock
 
 ```sh
 uv lock --refresh
+```
+
+## Run Tests
+
+### pytest
+
+```bash
+pip install pytest
+python -m unittest discover -s tests -p 'test_*.py'
+```
+
+### tox
+
+```bash
+pip install -r requirements-test.txt
+tox
 ```
