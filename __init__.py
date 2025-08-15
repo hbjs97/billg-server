@@ -13,7 +13,7 @@ if profile == "local":
     dotenv.load_dotenv()
 else:
     Vault.load(
-        url="http://vault.example.com:8200",
+        url="http://vault-internal.vault.svc.cluster.local:8200",
         app="server",
         profile=profile,
     )
