@@ -13,3 +13,10 @@ docker/data/**
 .venv
 repos/
 logs/
+
+# Git 히스토리 정리 관련
+bfg.jar
+replacements.txt
+clean-git-history.sh
+GIT_HISTORY_CLEANUP.md
+*-backup-*
