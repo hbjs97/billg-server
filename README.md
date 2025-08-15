@@ -12,7 +12,6 @@
 - [설정](#설정)
 - [사용법](#사용법)
 - [API 문서](#api-문서)
-- [기여하기](#기여하기)
 - [라이선스](#라이선스)
 
 ## 🎯 개요
@@ -316,41 +315,9 @@ if response.status_code == 200:
 - **Swagger UI**: http://localhost:8000/docs
 - **ReDoc**: http://localhost:8000/redoc
 
-## 🤝 기여하기
-
-기여를 환영합니다! 다음 가이드라인을 따라주세요:
-
-1. 저장소 포크
-2. 기능 브랜치 생성 (`git checkout -b feature/amazing-feature`)
-3. 변경 사항 커밋 (`git commit -m 'Add amazing feature'`)
-4. 브랜치에 푸시 (`git push origin feature/amazing-feature`)
-5. 풀 리퀘스트 열기
-
-### 개발 워크플로우
-
-1. **이슈 생성**: 문제나 기능 설명
-2. **브랜치 생성**: 최신 `main`에서 생성
-3. **개발**: 테스트와 함께 구현
-4. **코드 리뷰**: 메인테이너에게 리뷰 요청
-5. **병합**: 승인 및 CI 통과 후
-
-### 코드 표준
-
-- PEP 8 스타일 가이드 따르기
-- 포괄적인 docstring 작성
-- 타입 힌트 추가
-- 80% 이상의 테스트 커버리지 유지
-- 문서 업데이트
-
 ## 📄 라이선스
 
 이 프로젝트는 MIT 라이선스 하에 라이선스가 부여됩니다 - 자세한 내용은 [LICENSE](LICENSE) 파일을 참조하세요.
-
-## 🙏 감사의 말
-
-- GPT-4 Vision API를 제공한 OpenAI
-- FastAPI 프레임워크 개발자들
-- 오픈 소스 커뮤니티 기여자들
 
 ## 📞 지원
 
